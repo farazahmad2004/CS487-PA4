@@ -99,10 +99,14 @@ Function Link: [function_app.py](function-app/function_app.py).
 
 
 ### Evidence 3.2: Local Function Handler Listing
-
-TODO: Embed screenshot of `func start` showing the HTTP starter, orchestrator, and activities.
-
-Description: TODO: Explain that the Durable Functions runtime discovered your handlers.
+![func start](docs/task3.2.png)
+Description: This screenshot shows that `func start` successfully registers all handlers: HTTP starter, orchestrator, validate_activity, report_activity.
+### Evidence 3.3: Local Smoke Test of validate_activity against the deployed AKS service
+#### Screenshots:
+![func start](docs/task3.3-1.png)
+Description: After completing task 5, we can see that the orchestrator starts perfectly, then `validate_activity` executes successfully against AKS cluster and then throws a huge error because cloud credentials aren't loaded on the laptop.
+![func start](docs/task3.3-2.png)
+Description: This screenshot shows the output of the curl command returning the id and many other URLs.
 
 ---
 

@@ -255,9 +255,8 @@ Description: TODO: Trace the same order ID across services.
 
 ### Evidence 7.4: Reject Path UI
 
-TODO: Embed screenshot of an order with `qty > 100` being rejected.
-
-Description: TODO: Explain why no report ACI should be created for this order.
+![any](docs/task7.2-rej1.png)
+This screenshot shows that there is rejection for order > 100.
 
 ---
 

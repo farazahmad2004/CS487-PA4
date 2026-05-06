@@ -126,35 +126,69 @@ Description: TODO: Explain why this failure is expected at this stage.
 
 ## Task 5: AKS Validator (15 points)
 
+Since I used Poweshell, I had to use slightly different versions of the commands given in the manual. The commands used were:
+```bash
+# aks creation command:
+az aks create --resource-group rg-sp26-26100250 --name pa4-26100250 --node-count 1 --node-vm-size Standard_B2s --generate-ssh-keys
+# getting credentials:
+az aks get-credentials --resource-group rg-sp26-26100250 --name pa4-26100250
+# verification:
+kubectl get nodes
+```
+
 ### Evidence 5.1: AKS Cluster
 
-TODO: Embed screenshot of AKS overview showing `aks-<rollnum>` succeeded.
+![Overview Page of AKS showing pa4-26100250](docs/task5-0-aks-overview.png)
 
-Description: TODO: State node count, node size, region, and resource group.
+Description: The above figure shows the overview page of the AKS `pa4-26100250` with Succeeded status. It has one node and the node size is Standard_B2s. It was created in `rg-sp26-26100250` and in UK West because the resource group is there.
 
 ### Evidence 5.2: Kubernetes Nodes and Pods
-
+#### Get Nodes:
+![Screenshot showing `kubectl get nodes` working successfully](docs/task5-1-get-nodes.png)
+Description: The above screenshot shows that the `kubectl get nodes` successfully shows the cluster node with status Ready.
 TODO: Embed screenshot of `kubectl get nodes` and `kubectl get pods`.
-
-Description: TODO: Explain that the validator pod is scheduled and running.
+#### Terminal Commands:
+```bash
+$ACR_USER = az acr credential show -n pa426100250 --query username -o tsv
+$ACR_PASS = az acr credential show -n pa426100250 --query "passwords[0].value" -o tsv
+kubectl create secret docker-registry acr-secret --docker-server=pa426100250.azurecr.io --docker-username=$ACR_USER --docker-password=$ACR_PASS
+# applying kubernetes config:
+kubectl apply -f validate-api/k8s/deployment.yaml
+kubectl apply -f validate-api/k8s/service.yaml
+# watch
+kubectl get pods
+```
+#### Get Pods:
+![Screenshot showing `kubectl get pods` command](docs/task5-2-get-pods.png)
+Description: The above screenshot shows the output of `kubectl get pods`, which confirms that the validator pod is now Running.
 
 ### Evidence 5.3: Kubernetes Service
+#### Command:
+```bash
+kubectl get service validate-service
+```
+![Screenshot showing `kubectl get service validate-service` command](docs/task5-3-get-service.png)
 
-TODO: Embed screenshot of `kubectl get service validate-service`.
-
-Description: TODO: Identify the external IP and port exposed by the LoadBalancer.
+Description: The above screenshot shows the output of `kubectl get service validate-service`, which shows that the assigned CLUSTER-IP is `10.0.23.234`, EXTERNAL-IP is `20.90.19.30` and port(s) are `8080:30743`.
 
 ### Evidence 5.4: Validator API Tests
-
-TODO: Embed screenshot of `curl /health`, a valid `curl /validate`, and an invalid `curl /validate`.
-
-Description: TODO: Explain the accepted path and the `qty > 100` rejection rule.
+#### Commands:
+```bash
+curl http://20.90.19.30:8080/health
+curl -X POST http://20.90.19.30:8080/validate -H "Content-Type: application/json" -d "{\"order_id\": \"0-1001\", \"items\": [{\"sku\": \"ABC\", \"qty\":2}]}"
+curl -X POST http://20.90.19.30:8080/validate -H "Content-Type: application/json" -d "{\"order_id\": \"0-1002\", \"items\": [{\"sku\": \"ABC\", \"qty\":999}]}"
+```
+#### Screenshot:
+![Screenshot showing `curl /health` and valid and invalid validate](docs/task5-4-curl-outputs.png)
+Description: The above screenshot shows the outputs of `curl /health` and valid and invalid `/validate` curl requests. We can see that every command gives expected results: The valid curl successfully returns "ok", while the invalid one gives "quantity exceeds limit" because the given quantity there (999) was greater than 100.
 
 ### Evidence 5.5: Function App `VALIDATE_URL`
-
-TODO: Embed screenshot showing the Function App application setting `VALIDATE_URL`.
-
-Description: TODO: Explain how the Durable Function reaches the AKS validator.
+#### Command:
+```bash
+az functionapp config appsettings set --name pa4-26100250-fn --resource-group rg-sp26-26100250 --settings VALIDATE_URL="http://20.90.19.30:8080/validate"
+```
+![Screenshot showing VALIDATE_URL is configured in Environment Variables](docs/task5-5-validate_url.png)
+The above screenshot shows that `VALIDATE_URL` is correctly configured in Environment Variables of the function app.
 
 ### Evidence 5.6: AKS Idle Behavior
 

@@ -215,44 +215,31 @@ The CLI command for creation of the container failed saying "request is blocked 
 Description: The above screenshot shows the `reports` container present in the storage account `pa426100250`. This container will store the generated PDFs.
 
 ### Evidence 6.2: Manual ACI Run
+![any](docs/task6.2-1.png)
 
-TODO: Embed screenshot of `az container show` for `ci-report-test`.
-
-Description: TODO: State the final container state and why the job exits.
+Description: This shows the output of `az container show`, and it failed. The reason for this is cleared in the next screenshot which is AuthorizationError (clear in the logs). Due to some misconfiguration either in Managed Identity or somewhere else, the authentication never works.
 
 ### Evidence 6.3: ACI Logs
-
-TODO: Embed screenshot of `az container logs`.
-
-Description: TODO: Explain what the report job printed after generating and uploading the PDF.
-
+![any](docs/task-6.2-2.png)
+Description: The logs clearly explain the scenario. This was debugged for more than 7 hours with no solution found until midnight.
 ### Evidence 6.4: Generated PDF
-
-TODO: Embed screenshot showing `TEST-001.pdf` in Blob Storage or opened from Blob Storage.
-
-Description: TODO: Explain how this proves the ACI wrote to storage.
-
+![any](docs/task-6.2-3.png)
+Description: This shows that network rules of storage account stop the execution of this command, which was the same reponse in 6.1 (which then was done using portal). ANyways, it wouldn't work as PDF is not stored becuase of previous Authorization error.
 ### Evidence 6.5: Function App Managed Identity and IAM
-
-TODO: Embed screenshots of system-assigned identity enabled and Contributor role assignment on your resource group.
-
-Description: TODO: Explain why the Function App needs this permission to create ACIs.
+![any](docs/task6.3.png)
+This one shows that the managed identity was successfully added to Identity of the function. (This was 100% successful).
 
 ### Evidence 6.6: Report App Settings
-
-TODO: Embed screenshot of `REPORT_*`, `ACR_*`, `STORAGE_CONN`, and `SUBSCRIPTION_ID` settings.
-
-Description: TODO: Explain what each group of settings is used for. Mask secrets.
+![any](docs/task6.4.png)
+Description: All environment variables were successfully added to the function app.
 
 ---
 
 ## Task 7: End-to-End Pipeline (15 points)
 
 ### Evidence 7.1: Web App Wiring
-
-TODO: Embed screenshot showing `FUNCTION_START_URL` and `FUNCTION_STATUS_URL` configured on the Web App.
-
-Description: TODO: Explain how the frontend starts and polls the Durable orchestration.
+![any](docs/task7.1.png)
+Description: This screenshot shows that `FUNCTION_START_URL` and `FUNCTION_STATUS_URL` are correctly configured on the Web App.
 
 ### Evidence 7.2: Happy Path UI
 

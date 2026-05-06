@@ -289,5 +289,6 @@ Description: TODO: Identify the most expensive resource and explain why.
 ### Question 8.6: Challenges Faced
 
 TODO: Describe at least two real issues you hit and how you debugged them.
+All challenges have been explained before when I faced them
 
 ---
